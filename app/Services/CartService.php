@@ -6,16 +6,15 @@ use App\Models\Product;
 
 class CartService
 {
-    public function addToCart(int $productId): array
+    public function addToCart(Product $product): array
     {
         $shoppingCart = session('shoppingCart', []);
 
-        if (isset($shoppingCart[$productId])) {
-            $shoppingCart[$productId]['amount'] += 1;
+        if (isset($shoppingCart[$product->id])) {
+            $shoppingCart[$product->id]['amount'] += 1;
         } else {
-            $product = Product::findOrFail($productId);
-            $shoppingCart[$productId] = [
-                'productId' => $productId,
+            $shoppingCart[$product->id] = [
+                'productId' => $product->id,
                 'amount' => '1',
                 'price' => $product->price->getAmount(),
                 'name' => $product->name,
@@ -27,18 +26,18 @@ class CartService
         return $shoppingCart;
     }
 
-    public function removeFromCart(int $productId): array | null
+    public function removeFromCart(Product $product): array | null
     {
         $shoppingCart = session('shoppingCart', []);
 
-        if (!isset($shoppingCart[$productId])) {
+        if (!isset($shoppingCart[$product->id])) {
             return null;
         }
 
-        if ($shoppingCart[$productId]['amount'] == 1) {
-            unset($shoppingCart[$productId]);
+        if ($shoppingCart[$product->id]['amount'] == 1) {
+            unset($shoppingCart[$product->id]);
         } else {
-            $shoppingCart[$productId]['amount'] = -1;
+            $shoppingCart[$product->id]['amount'] = -1;
         }
 
         session(['shoppingCart' => $shoppingCart]);
